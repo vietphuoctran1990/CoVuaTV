@@ -42,23 +42,75 @@ jobs:
           ls -la "$WWW" | head
           test -f "$WWW/index.html"
 
-      - name: Assemble debug APK
-        working-directory: android-webview
+      # #17: tao keystore ky release.
+      # Uu tien secret ANDROID_KEYSTORE_BASE64 (khoa on dinh — cai de-len khong mat du lieu).
+      # Neu khong co secret, tu sinh keystore tam de APK van duoc ky (release install duoc,
+      # nhung moi lan build la khoa khac → lan sau phai go cai lai).
+      - name: Prepare signing keystore
+        id: keystore
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KS_KEYPASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          gradle assembleDebug --no-daemon --stacktrace
+          KS_PATH="$RUNNER_TEMP/doraemon-release.jks"
+          if [ -n "${KS_B64:-}" ]; then
+            echo "$KS_B64" | base64 -d > "$KS_PATH"
+            echo "storePassword=${KS_PASS}" >> "$GITHUB_OUTPUT"
+            echo "keyAlias=${KS_ALIAS}" >> "$GITHUB_OUTPUT"
+            echo "keyPassword=${KS_KEYPASS}" >> "$GITHUB_OUTPUT"
+            echo "Dùng keystore từ secret."
+          else
+            PASS="doraemon-tv"
+            keytool -genkeypair -v -keystore "$KS_PATH" -storepass "$PASS" -keypass "$PASS" \
+              -alias doraemon -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Doraemon Chess TV, OU=Family, O=Family, L=VN, C=VN"
+            echo "storePassword=$PASS" >> "$GITHUB_OUTPUT"
+            echo "keyAlias=doraemon" >> "$GITHUB_OUTPUT"
+            echo "keyPassword=$PASS" >> "$GITHUB_OUTPUT"
+            echo "::warning::Chưa có secret ANDROID_KEYSTORE_BASE64 — dùng keystore tạm (mỗi build một khóa)."
+          fi
+          echo "path=$KS_PATH" >> "$GITHUB_OUTPUT"
+
+      # #18: versionCode tang theo so lan chay; versionName gan run number
+      - name: Assemble release APK (signed)
+        working-directory: android-webview
+        env:
+          KEYSTORE_FILE: ${{ steps.keystore.outputs.path }}
+          KEYSTORE_PASSWORD: ${{ steps.keystore.outputs.storePassword }}
+          KEY_ALIAS: ${{ steps.keystore.outputs.keyAlias }}
+          KEY_PASSWORD: ${{ steps.keystore.outputs.keyPassword }}
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: "1.2.${{ github.run_number }}"
+        run: |
+          set -euo pipefail
+          gradle assembleRelease --no-daemon --stacktrace
           find . -name "*.apk" -print
+
+      - name: Rename APK
+        run: |
+          set -euo pipefail
+          OUT=android-webview/app/build/outputs/apk/release
+          APK=$(find "$OUT" -name "*.apk" | head -n1)
+          cp "$APK" "$OUT/DoraemonChessTV.apk"
+          ls -lh "$OUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: doraemon-chess-tv-apk
-          path: android-webview/app/build/outputs/apk/debug/*.apk
+          path: android-webview/app/build/outputs/apk/release/DoraemonChessTV.apk
           if-no-files-found: error
           retention-days: 30
 
       - name: Summary
         run: |
-          echo "### APK WebView" >> "$GITHUB_STEP_SUMMARY"
-          echo "Sideload lên Xiaomi TV: bật Unknown sources → USB/ADB install." >> "$GITHUB_STEP_SUMMARY"
-          ls -lh android-webview/app/build/outputs/apk/debug/ || true
+          echo "### APK WebView (release, đã ký)" >> "$GITHUB_STEP_SUMMARY"
+          echo "versionCode = ${{ github.run_number }} · versionName = 1.2.${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Sideload Xiaomi TV: bật Unknown sources → \`adb install -r DoraemonChessTV.apk\`." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "> Để cập nhật đè không mất dữ liệu, thêm secret \`ANDROID_KEYSTORE_BASE64\` (+ password/alias)." >> "$GITHUB_STEP_SUMMARY"
+          ls -lh android-webview/app/build/outputs/apk/release/ || true

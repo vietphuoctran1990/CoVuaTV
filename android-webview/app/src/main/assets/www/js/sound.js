@@ -98,9 +98,49 @@
     }
   }
 
+  /* ---------- Giong noi (Web Speech) ---------- */
+  let voiceOn = store.get("dct_voice", true);
+  let viVoice = null;
+  let voiceReady = false;
+
+  function pickVoice() {
+    if (!global.speechSynthesis) return;
+    const list = global.speechSynthesis.getVoices() || [];
+    viVoice =
+      list.find((v) => /vi[-_]/i.test(v.lang)) ||
+      list.find((v) => /^vi/i.test(v.lang)) ||
+      null;
+    voiceReady = true;
+  }
+  if (global.speechSynthesis) {
+    pickVoice();
+    global.speechSynthesis.onvoiceschanged = pickVoice;
+  }
+
+  function speak(text) {
+    if (!voiceOn || !text || !global.speechSynthesis || !global.SpeechSynthesisUtterance) return;
+    if (!voiceReady) pickVoice();
+    try {
+      global.speechSynthesis.cancel();
+      const u = new global.SpeechSynthesisUtterance(text);
+      u.lang = "vi-VN";
+      if (viVoice) u.voice = viVoice;
+      u.rate = 0.95;
+      u.pitch = 1.05;
+      global.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
   global.Sound = {
     unlock,
     play,
+    speak,
+    getVoice: () => voiceOn,
+    setVoice(v) {
+      voiceOn = v;
+      store.set("dct_voice", v);
+      if (!v && global.speechSynthesis) global.speechSynthesis.cancel();
+    },
     setInGame(v) {
       inGame = v;
       refreshBgm();

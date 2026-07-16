@@ -79,19 +79,35 @@ Cần Godot 4.7 + Android SDK + export templates. Dùng preset `Android` trong `
 
 ## Cấu trúc
 
+> ⚠️ **Bản đang chạy trên TV/PC là bản web** (`web/`), được đóng gói vào APK qua
+> `android-webview/`. Thư mục Godot bên dưới (`autoload/ core/ ui/ scenes/`) là
+> **bản gốc cũ (legacy)**, không còn là bản phát hành chính — giữ lại để tham khảo.
+
 ```
-autoload/     GameBus, Settings, AudioMgr
-core/         board, move_gen, game_state, ai, piece_catalog
-ui/           main_menu, board_view, game_root
-scenes/       main_menu.tscn, game.tscn
-docs/         art_bible, controls
+web/                Bản chính: HTML/CSS/JS chạy trên TV, PC, điện thoại
+  ├─ js/chess.js    Engine cờ (luật, sinh nước, AI helper)
+  ├─ js/sound.js    Âm thanh (WebAudio) + giọng đọc (Web Speech)
+  └─ js/app.js      Giao diện, điều khiển remote/bàn phím/chạm
+android-webview/    Vỏ WebView + Leanback TV để build APK
+tests/web/          Kiểm thử end-to-end (Playwright) — CI tự chạy
+
+autoload/ core/ ui/ scenes/   (legacy Godot — không dùng để phát hành)
+docs/               art_bible, controls
 ```
 
 ## Ghi chú bản quyền
 
 Dùng **nội bộ gia đình**. Không dùng asset/nhạc chính thức. Nếu phát hành công khai: redesign + đổi tên thương mại. Xem `docs/art_bible.md`.
 
-## Kiểm thử nhanh logic (khi có Godot CLI)
+## Kiểm thử
+
+Bản web (khuyến nghị):
+
+```bash
+cd tests/web && npm ci && npx playwright install chromium && npm test
+```
+
+Bản Godot legacy (khi có Godot CLI):
 
 ```bash
 godot --headless --path . --script tests/smoke_test.gd

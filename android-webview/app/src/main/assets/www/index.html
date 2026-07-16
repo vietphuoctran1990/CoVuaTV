@@ -25,12 +25,20 @@
           <p class="tagline">Bố mẹ &amp; bé chơi cùng nhau · UI lớn · Remote / bàn phím / chạm</p>
         </div>
       </div>
+      <p id="menu-stats" class="menu-stats"></p>
       <div id="menu-list" class="menu-list" role="menu"></div>
       <div id="diff" class="modal" hidden>
         <div class="modal-card">
           <h3>Chơi với máy</h3>
-          <p>Chọn độ khó (↑ ↓ rồi Enter/OK)</p>
+          <p id="diff-side" class="diff-side">◀ Bé cầm: <b>Phe Xanh</b> ▶</p>
+          <p class="hint-sm">↑ ↓ chọn độ khó · ← → đổi phe · Enter/OK bắt đầu</p>
           <div id="diff-list" class="pause-list"></div>
+        </div>
+      </div>
+      <div id="settings" class="modal" hidden>
+        <div class="modal-card">
+          <h3>Cài đặt</h3>
+          <div id="settings-list" class="pause-list"></div>
         </div>
       </div>
       <p class="hint-bar">
@@ -50,7 +58,9 @@
         <button type="button" id="btn-menu" class="chip">Tạm dừng</button>
       </header>
       <div class="game-body">
-        <div id="board" class="board" aria-label="Bàn cờ"></div>
+        <div id="board" class="board" aria-label="Bàn cờ">
+          <svg id="arrow-layer" class="arrow-layer" aria-hidden="true"></svg>
+        </div>
         <aside class="side-panel">
           <h2>Nhân vật</h2>
           <ul class="legend" id="legend"></ul>

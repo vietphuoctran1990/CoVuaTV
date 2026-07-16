@@ -1,0 +1,38 @@
+# Kiểm thử end-to-end bản web/TV (Playwright)
+name: Web e2e test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "web/**"
+      - "tests/web/**"
+      - ".github/workflows/web-test.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "tests/web/**"
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        working-directory: tests/web
+        run: npm install
+
+      - name: Install Chromium
+        working-directory: tests/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Run e2e
+        working-directory: tests/web
+        run: npm test

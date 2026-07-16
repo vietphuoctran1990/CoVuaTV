@@ -1,0 +1,12 @@
+{
+  "name": "covuatv-web-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kiểm thử end-to-end bản web/TV Cờ Vua Doraemon (Playwright)",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

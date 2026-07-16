@@ -12,6 +12,12 @@ android/
 *.keystore
 *.jks
 
+# Node (test deps)
+node_modules/
+
+# File backup tạm
+*.bak
+
 # IDE / OS
 .vs/
 .vscode/

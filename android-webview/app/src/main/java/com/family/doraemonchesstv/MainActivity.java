@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
  */
 public class MainActivity extends AppCompatActivity {
     private WebView web;
+    private long lastBackMs = 0L;
+    // Cap nhat tu JS: true khi dang o man hinh menu chinh (co the thoat app)
+    private volatile boolean atMainMenu = true;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -52,9 +57,19 @@ public class MainActivity extends AppCompatActivity {
         web.setFocusable(true);
         web.setFocusableInTouchMode(true);
         web.requestFocus(View.FOCUS_DOWN);
+        // Cau noi JS -> native de biet dang o menu chinh hay khong
+        web.addJavascriptInterface(new NavBridge(), "AndroidNav");
 
         // Local game bundle
         web.loadUrl("file:///android_asset/www/index.html");
+    }
+
+    /** JS goi AndroidNav.setMainMenu(true/false) khi doi man hinh. */
+    private class NavBridge {
+        @JavascriptInterface
+        public void setMainMenu(boolean v) {
+            atMainMenu = v;
+        }
     }
 
     @Override
@@ -68,13 +83,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Forward Back to page as Escape-like — JS handles Esc; here we just inject
-        if (web != null) {
-            web.evaluateJavascript(
-                    "(function(){var e=new KeyboardEvent('keydown',{key:'Escape',bubbles:true});window.dispatchEvent(e);})();",
-                    null
-            );
+        if (web == null) {
+            super.onBackPressed();
+            return;
         }
+        if (atMainMenu) {
+            // O menu chinh: nhan Back 2 lan trong 2s de thoat app
+            long now = System.currentTimeMillis();
+            if (now - lastBackMs < 2000L) {
+                finish();
+            } else {
+                lastBackMs = now;
+                Toast.makeText(this, "Nhấn Back lần nữa để thoát", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        // Trong game / man hinh phu: chuyen Back thanh Escape cho JS xu ly
+        web.evaluateJavascript(
+                "(function(){var e=new KeyboardEvent('keydown',{key:'Escape',bubbles:true});window.dispatchEvent(e);})();",
+                null
+        );
     }
 
     @Override
