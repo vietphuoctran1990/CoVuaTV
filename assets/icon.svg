@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="24" fill="#1565C0"/>
+  <circle cx="64" cy="58" r="36" fill="#4FC3F7" stroke="#0277BD" stroke-width="4"/>
+  <circle cx="64" cy="72" r="16" fill="#FFFFFF"/>
+  <circle cx="52" cy="50" r="5" fill="#212121"/>
+  <circle cx="76" cy="50" r="5" fill="#212121"/>
+  <rect x="28" y="100" width="72" height="12" rx="4" fill="#FFD54F"/>
+  <text x="64" y="110" text-anchor="middle" font-size="10" font-family="Arial" fill="#1A237E">CHESS</text>
+</svg>

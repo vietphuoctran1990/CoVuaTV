@@ -1,0 +1,25 @@
+# Godot
+.godot/
+*.translation
+.import/
+
+# Android / export output (CI tạo lại)
+build/
+export/
+android/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# IDE / OS
+.vs/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets — không commit keystore release
+secrets/
+*.pem

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d47a1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="Cờ vua gia đình — Doraemon, Xuka, Chaien, Xeko, Nobita. Chơi trên TV / máy tính / điện thoại." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <title>Cờ Vua Doraemon TV</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- MENU -->
+    <section id="screen-menu" class="screen">
+      <div class="hero">
+        <img class="hero-img" src="pieces/blue/king_doraemon.png" alt="" />
+        <div>
+          <h1>Cờ Vua Doraemon TV</h1>
+          <p class="tagline">Bố mẹ &amp; bé chơi cùng nhau · UI lớn · Remote / bàn phím / chạm</p>
+        </div>
+      </div>
+      <div id="menu-list" class="menu-list" role="menu"></div>
+      <p class="hint-bar">
+        <kbd>↑</kbd><kbd>↓</kbd> chọn · <kbd>Enter</kbd> OK ·
+        <button type="button" id="btn-fs" class="linkish">Toàn màn hình</button> ·
+        <button type="button" id="btn-install" class="linkish" hidden>Cài như app</button>
+      </p>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen" hidden>
+      <header class="game-top">
+        <div id="turn-badge" class="badge-turn">Lượt: Phe Xanh</div>
+        <div id="mode-badge" class="badge-mode">2 người</div>
+        <button type="button" id="btn-hint" class="chip">Gợi ý (H)</button>
+        <button type="button" id="btn-undo" class="chip">Hoàn tác (U)</button>
+        <button type="button" id="btn-menu" class="chip">Menu</button>
+      </header>
+      <div class="game-body">
+        <div id="board" class="board" aria-label="Bàn cờ"></div>
+        <aside class="side-panel">
+          <h2>Nhân vật</h2>
+          <ul class="legend" id="legend"></ul>
+          <div class="captured">
+            <div><span>Xanh ăn:</span> <span id="cap-w"></span></div>
+            <div><span>Cam ăn:</span> <span id="cap-b"></span></div>
+          </div>
+          <p class="side-help">
+            <strong>Cách đi:</strong> chọn quân → chọn ô.<br/>
+            Ô <span class="dot-g"></span> đi được · Ô <span class="dot-r"></span> ăn được.
+          </p>
+        </aside>
+      </div>
+      <div id="toast" class="toast" hidden></div>
+      <div id="fx-layer" class="fx-layer" aria-hidden="true"></div>
+      <div id="promo" class="modal" hidden>
+        <div class="modal-card">
+          <h3>Mini-Dora phong cấp!</h3>
+          <p>Chọn nhân vật (← → rồi Enter)</p>
+          <div id="promo-choices" class="promo-row"></div>
+        </div>
+      </div>
+      <div id="end-modal" class="modal" hidden>
+        <div class="modal-card win">
+          <div class="confetti" id="confetti"></div>
+          <h3 id="end-title">Chiến thắng!</h3>
+          <p id="end-msg"></p>
+          <button type="button" id="btn-end-ok" class="primary">Về menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TUTORIAL -->
+    <section id="screen-tut" class="screen" hidden>
+      <h1>Học chơi (5 bước)</h1>
+      <div id="tut-card" class="card big"></div>
+      <p class="hint-bar"><kbd>←</kbd><kbd>→</kbd> · <kbd>Enter</kbd> · <kbd>Esc</kbd> menu</p>
+    </section>
+
+    <!-- CHARS -->
+    <section id="screen-chars" class="screen" hidden>
+      <h1>Giới thiệu nhân vật</h1>
+      <div id="char-card" class="card big char-card"></div>
+      <p class="hint-bar"><kbd>←</kbd><kbd>→</kbd> · <kbd>Enter</kbd>/<kbd>Esc</kbd> về menu</p>
+    </section>
+  </div>
+  <script src="js/chess.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
