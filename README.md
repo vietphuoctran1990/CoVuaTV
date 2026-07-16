@@ -13,10 +13,10 @@ hoặc mở **`web/index.html`**
 
 | Phím | Chức năng |
 |------|-----------|
-| ↑ ↓ ← → | Di chuyển |
-| Enter | Chọn / đi |
-| Esc | Hủy / menu (×2) |
-| H / U | Gợi ý / hoàn tác |
+| ↑ ↓ ← → | Di chuyển (giữ để đi nhanh) |
+| Enter / OK | Chọn / đi |
+| Esc / Back | Bỏ chọn · menu tạm dừng (gợi ý, hoàn tác, âm thanh, chơi lại) |
+| H / U | Gợi ý / hoàn tác (phím tắt bàn phím) |
 
 Cũng hỗ trợ **click/chạm**. PWA + fullscreen: `Choi-Game.bat` → **2**.  
 Chi tiết: **[docs/WEB_TV.md](docs/WEB_TV.md)**
@@ -66,13 +66,15 @@ Cần Godot 4.7 + Android SDK + export templates. Dùng preset `Android` trong `
 
 ## Tính năng MVP
 
-- [x] Luật cờ: đi quân, ăn, nhập thành, en passant, phong cấp, chiếu / hết / hòa
-- [x] 2 người cùng TV + chơi với máy (AI dễ)
-- [x] Remote: chọn 2 bước, gợi ý, hoàn tác
-- [x] HUD tiếng Việt, map nhân vật, toast “ăn quân / chiếu”
+- [x] Luật cờ: đi quân, ăn, nhập thành, en passant, phong cấp, chiếu / hết / hòa (kèm luật 50 nước, hòa thiếu quân)
+- [x] 2 người cùng TV + chơi với máy (**3 mức độ: Dễ / Vừa / Khó**)
+- [x] Remote: chọn 2 bước, menu tạm dừng (Back/Esc) với gợi ý, hoàn tác, âm thanh
+- [x] HUD tiếng Việt, map nhân vật, toast “ăn quân / chiếu”, highlight nước vừa đi, tọa độ a–h/1–8
+- [x] Animation quân trượt, hiệu ứng ăn quân, confetti toàn màn hình khi thắng
 - [x] Menu, cài đặt, giới thiệu nhân vật
 - [x] Sprite chibi 6 nhân vật × 2 phe (`assets/pieces/blue|orange`)
-- [x] SFX + BGM (`assets/audio/*.wav`) — bật/tắt trong Cài đặt
+- [x] SFX + BGM trên cả bản web/TV (`web/audio/*.wav`) — bật/tắt trong menu & tạm dừng
+- [x] Tự lưu ván dở (localStorage) — menu hiện “Chơi tiếp ván dở”
 - [x] Tutorial 5 bước (menu **Học chơi**)
 
 ## Cấu trúc

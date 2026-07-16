@@ -7,7 +7,7 @@
   --orange: #ff8a65;
   --text: #ffffff;
   --muted: rgba(255,255,255,.82);
-  --cell: min(11vw, 9vh, 88px);
+  --cell: min(10.5vw, 9.8vh, 150px);
   --radius: 14px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
@@ -23,9 +23,10 @@ html, body {
   user-select: none;
   overflow-x: hidden;
 }
-body { padding: calc(12px + var(--safe-t)) 12px calc(16px + var(--safe-b)); }
+/* Le rong hon de tranh TV overscan cat mep */
+body { padding: calc(max(12px, 2vmin) + var(--safe-t)) max(12px, 2.2vmin) calc(max(14px, 2vmin) + var(--safe-b)); }
 
-#app { max-width: 1200px; margin: 0 auto; }
+#app { max-width: 1700px; margin: 0 auto; }
 
 .screen h1 {
   margin: 0 0 12px;
@@ -84,8 +85,8 @@ kbd {
 .badge-turn.blue { background: #0277bd; }
 .badge-turn.orange { background: #e64a19; }
 .chip {
-  border: 0; border-radius: 999px; padding: 10px 14px; cursor: pointer;
-  background: #1a237e; color: #fff; font-size: 1rem;
+  border: 0; border-radius: 999px; padding: 12px 18px; cursor: pointer;
+  background: #1a237e; color: #fff; font-size: 1.05rem;
 }
 .chip:hover { outline: 2px solid var(--hi); }
 
@@ -113,6 +114,17 @@ kbd {
 .sq.dark { background: #81d4fa; }
 .sq.cursor { box-shadow: inset 0 0 0 4px var(--hi); z-index: 2; }
 .sq.sel { background: #64b5f6 !important; }
+.sq.last::before {
+  content: ""; position: absolute; inset: 0;
+  background: #ffd54f59; z-index: 0;
+}
+.coord {
+  position: absolute; z-index: 1; font-weight: 700;
+  font-size: clamp(.6rem, calc(var(--cell) * .16), 1.1rem);
+  color: #0d47a1; opacity: .55; pointer-events: none;
+}
+.coord-f { right: 5%; bottom: 2%; }
+.coord-r { left: 5%; top: 3%; }
 .sq.legal::after {
   content: ""; position: absolute; width: 18%; height: 18%; border-radius: 50%;
   background: #2e7d32cc; z-index: 1;
@@ -131,7 +143,7 @@ kbd {
   width: 88%; height: 88%; object-fit: contain; z-index: 2;
   filter: drop-shadow(0 3px 2px #0004);
   pointer-events: none;
-  transition: transform .15s ease;
+  will-change: transform;
 }
 .sq.pop .piece-img { animation: pop .28s ease; }
 @keyframes pop {
@@ -141,19 +153,19 @@ kbd {
 }
 
 .side-panel {
-  background: #0003; border-radius: var(--radius); padding: 14px 16px;
-  min-width: min(280px, 100%); max-width: 320px;
+  background: #0003; border-radius: var(--radius); padding: 16px 18px;
+  min-width: min(300px, 100%); max-width: 360px;
 }
-.side-panel h2 { margin: 0 0 10px; color: #fff59d; font-size: 1.25rem; }
+.side-panel h2 { margin: 0 0 10px; color: #fff59d; font-size: 1.4rem; }
 .legend { list-style: none; margin: 0; padding: 0; }
 .legend li {
   display: flex; align-items: center; gap: 10px;
-  margin: 8px 0; font-size: 1.05rem;
+  margin: 8px 0; font-size: 1.15rem;
 }
-.legend img { width: 40px; height: 40px; object-fit: contain; }
-.captured { margin-top: 14px; font-size: .95rem; color: var(--muted); }
-.captured img { width: 28px; height: 28px; vertical-align: middle; }
-.side-help { margin-top: 14px; color: var(--muted); font-size: .95rem; line-height: 1.45; }
+.legend img { width: 44px; height: 44px; object-fit: contain; }
+.captured { margin-top: 14px; font-size: 1.05rem; color: var(--muted); }
+.captured img { width: 36px; height: 36px; vertical-align: middle; }
+.side-help { margin-top: 14px; color: var(--muted); font-size: 1.05rem; line-height: 1.5; }
 .dot-g, .dot-r {
   display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle;
 }
@@ -169,7 +181,15 @@ kbd {
 }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } }
 
-.fx-layer { pointer-events: none; position: fixed; inset: 0; z-index: 40; overflow: hidden; }
+.fx-layer { pointer-events: none; position: fixed; inset: 0; z-index: 70; overflow: hidden; }
+.fx-cap {
+  position: absolute; object-fit: contain;
+  animation: fx-cap .45s ease-in forwards;
+}
+@keyframes fx-cap {
+  0% { transform: scale(1) rotate(0); opacity: 1; }
+  100% { transform: scale(.1) rotate(70deg) translateY(-30px); opacity: 0; }
+}
 .spark {
   position: absolute; width: 10px; height: 10px; border-radius: 50%;
   animation: spark .7s ease-out forwards;
@@ -215,8 +235,30 @@ kbd {
 .promo-btn img { width: 64px; height: 64px; object-fit: contain; display: block; margin: 0 auto 6px; }
 .promo-btn.active { border-color: var(--hi); background: #283593; }
 .primary {
-  margin-top: 14px; border: 0; border-radius: 999px; padding: 12px 22px;
+  margin-top: 14px; border: 3px solid transparent; border-radius: 999px; padding: 12px 22px;
   background: #ffd54f; color: #1a237e; font-size: 1.15rem; font-weight: 800; cursor: pointer;
+}
+.primary.ghost { background: #0004; color: #fff; }
+.end-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.end-actions .primary.active, .end-actions .primary:hover { border-color: #fff; outline: 3px solid var(--hi); }
+.end-img {
+  width: clamp(90px, 14vh, 150px); height: auto; margin: 0 auto 6px;
+  filter: drop-shadow(0 6px 10px #0006);
+  animation: bounce .9s ease infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-14px) rotate(3deg); }
+}
+
+.pause-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.pause-item {
+  border: 0; border-radius: 12px; padding: 13px 16px; cursor: pointer;
+  background: #0004; color: #fff; font-size: clamp(1.05rem, 2vw, 1.3rem);
+  text-align: left; width: 100%;
+}
+.pause-item.active, .pause-item:hover {
+  outline: 3px solid var(--hi); background: #283593;
 }
 
 .card.big {
@@ -226,12 +268,14 @@ kbd {
 .char-card { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
 .char-card img { width: 140px; height: 140px; object-fit: contain; }
 
-.confetti span {
-  position: absolute; width: 8px; height: 12px; top: -10px;
-  animation: fall 1.2s linear forwards;
+/* Confetti toan man hinh (spawn trong #fx-layer) */
+.confetti-piece {
+  position: absolute; width: 12px; height: 18px; top: -24px;
+  border-radius: 3px;
+  animation: fall 2.2s linear forwards;
 }
 @keyframes fall {
-  to { transform: translateY(220px) rotate(360deg); opacity: 0; }
+  to { transform: translateY(110vh) rotate(720deg); opacity: .3; }
 }
 
 @media (max-width: 700px) {

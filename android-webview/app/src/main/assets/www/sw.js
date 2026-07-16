@@ -1,11 +1,20 @@
 /* Service worker — offline cache for PWA */
-const CACHE = "doraemon-chess-v1";
+const CACHE = "doraemon-chess-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./css/style.css",
   "./js/chess.js",
+  "./js/sound.js",
   "./js/app.js",
+  "./audio/click.wav",
+  "./audio/move.wav",
+  "./audio/capture.wav",
+  "./audio/check.wav",
+  "./audio/promote.wav",
+  "./audio/win.wav",
+  "./audio/bonk.wav",
+  "./audio/bgm.wav",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",

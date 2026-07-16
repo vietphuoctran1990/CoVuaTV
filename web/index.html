@@ -26,6 +26,13 @@
         </div>
       </div>
       <div id="menu-list" class="menu-list" role="menu"></div>
+      <div id="diff" class="modal" hidden>
+        <div class="modal-card">
+          <h3>Chơi với máy</h3>
+          <p>Chọn độ khó (↑ ↓ rồi Enter/OK)</p>
+          <div id="diff-list" class="pause-list"></div>
+        </div>
+      </div>
       <p class="hint-bar">
         <kbd>↑</kbd><kbd>↓</kbd> chọn · <kbd>Enter</kbd> OK ·
         <button type="button" id="btn-fs" class="linkish">Toàn màn hình</button> ·
@@ -38,9 +45,9 @@
       <header class="game-top">
         <div id="turn-badge" class="badge-turn">Lượt: Phe Xanh</div>
         <div id="mode-badge" class="badge-mode">2 người</div>
-        <button type="button" id="btn-hint" class="chip">Gợi ý (H)</button>
-        <button type="button" id="btn-undo" class="chip">Hoàn tác (U)</button>
-        <button type="button" id="btn-menu" class="chip">Menu</button>
+        <button type="button" id="btn-hint" class="chip">Gợi ý</button>
+        <button type="button" id="btn-undo" class="chip">Hoàn tác</button>
+        <button type="button" id="btn-menu" class="chip">Tạm dừng</button>
       </header>
       <div class="game-body">
         <div id="board" class="board" aria-label="Bàn cờ"></div>
@@ -53,7 +60,8 @@
           </div>
           <p class="side-help">
             <strong>Cách đi:</strong> chọn quân → chọn ô.<br/>
-            Ô <span class="dot-g"></span> đi được · Ô <span class="dot-r"></span> ăn được.
+            Ô <span class="dot-g"></span> đi được · Ô <span class="dot-r"></span> ăn được.<br/>
+            <strong>Back/Esc:</strong> tạm dừng · gợi ý · hoàn tác.
           </p>
         </aside>
       </div>
@@ -66,12 +74,21 @@
           <div id="promo-choices" class="promo-row"></div>
         </div>
       </div>
+      <div id="pause" class="modal" hidden>
+        <div class="modal-card">
+          <h3>Tạm dừng</h3>
+          <div id="pause-list" class="pause-list"></div>
+        </div>
+      </div>
       <div id="end-modal" class="modal" hidden>
         <div class="modal-card win">
-          <div class="confetti" id="confetti"></div>
+          <img id="end-img" class="end-img" src="pieces/blue/king_doraemon.png" alt="" />
           <h3 id="end-title">Chiến thắng!</h3>
           <p id="end-msg"></p>
-          <button type="button" id="btn-end-ok" class="primary">Về menu</button>
+          <div class="end-actions">
+            <button type="button" id="btn-again" class="primary">Chơi lại</button>
+            <button type="button" id="btn-end-ok" class="primary ghost">Về menu</button>
+          </div>
         </div>
       </div>
     </section>
@@ -91,6 +108,7 @@
     </section>
   </div>
   <script src="js/chess.js"></script>
+  <script src="js/sound.js"></script>
   <script src="js/app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

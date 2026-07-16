@@ -286,6 +286,8 @@
     const p = n.sq[m.from];
     const s = side(p),
       t = typ(p);
+    const isCap = m.ep || !empty(n.sq[m.to]);
+    n.half = t === P || isCap ? 0 : n.half + 1;
     n.sq[m.from] = 0;
     if (m.ep) n.sq[sq(file(m.to), rank(m.from))] = 0;
     if (m.castle) {
@@ -330,6 +332,19 @@
     return out;
   }
 
+  // Hoa do thieu quan: chi con Vua vs Vua (+ toi da 1 Ma/Tuong)
+  function insufficientMaterial(st) {
+    let minors = 0;
+    for (const p of st.sq) {
+      if (empty(p)) continue;
+      const t = typ(p);
+      if (t === K) continue;
+      if (t === N || t === B) minors++;
+      else return false;
+    }
+    return minors <= 1;
+  }
+
   global.Chess = {
     EMPTY,
     P,
@@ -355,8 +370,10 @@
     clone,
     findKing,
     inCheck,
+    attacked,
     legalFrom,
     allLegal,
     apply,
+    insufficientMaterial,
   };
 })(window);
