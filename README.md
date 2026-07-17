@@ -32,37 +32,34 @@ Chi tiết: **[docs/WEB_TV.md](docs/WEB_TV.md)**
 | Mã | Nobita | Xanh / Cam |
 | Tốt | Mini-Dora | Xanh / Cam |
 
-## Build APK Android TV (không cần SDK máy cty)
+## Build APK Android TV (Xiaomi / Google TV)
 
-Workflow GitHub: **Build Android APK (WebView)** — bọc `web/` trong WebView + Leanback TV.
+**Dùng workflow WebView** (không dùng bản Godot export cho TV):
 
-1. Push repo (máy nhà nếu cty chặn GitHub)  
-2. Actions → **Build Android APK (WebView)** → Run  
-3. Tải artifact `doraemon-chess-tv-apk`  
-4. Sideload Xiaomi TV  
-
-```bash
-adb connect <IP_TV>:5555
-adb install -r app-debug.apk
-```
-
-Chi tiết: **[docs/WEB_TV.md](docs/WEB_TV.md)** · **[docs/GITHUB_BUILD.md](docs/GITHUB_BUILD.md)**
-
-Tóm tắt:
-
-1. Push repo lên GitHub (hoặc zip → máy khác → push)
-2. Actions → **Build Android APK** → **Run workflow**
-3. Tải artifact `doraemon-chess-tv-apk` → `DoraemonChessTV.apk`
-4. Cài lên Xiaomi TV (USB / ADB, bật Unknown sources)
+1. Actions → **Build Android APK (WebView)** → **Run workflow**
+2. Tải artifact `doraemon-chess-tv-apk` → file `DoraemonChessTV.apk`
+3. TV: bật **Cài app không rõ nguồn** (Unknown sources)
+4. Cài bằng USB File Manager **hoặc** ADB:
 
 ```bash
 adb connect <IP_TV>:5555
 adb install -r DoraemonChessTV.apk
 ```
 
-### Export tay trên PC (tuỳ chọn)
+### TV báo “không tương thích” / cài không được
 
-Cần Godot 4.7 + Android SDK + export templates. Dùng preset `Android` trong `export_presets.cfg`.
+Đã gặp trên **Xiaomi S Mini LED 55" 4K** khi cài nhầm **APK Godot** (thiếu `LEANBACK_LAUNCHER`, chỉ `arm64`).
+
+| Làm | Chi tiết |
+|-----|----------|
+| 1 | Chỉ cài APK từ workflow **Build Android APK (WebView)** |
+| 2 | Gỡ bản cũ trên TV (Settings → Apps) rồi cài lại |
+| 3 | Nếu ADB: `adb uninstall com.family.doraemonchesstv` rồi `adb install DoraemonChessTV.apk` |
+| 4 | Không dùng artifact của workflow **Build Android APK** (Godot legacy) |
+
+APK WebView: pure Java + Leanback + mọi kích thước màn (4K/xlarge), minSdk 21.
+
+Chi tiết: **[docs/WEB_TV.md](docs/WEB_TV.md)** · **[docs/GITHUB_BUILD.md](docs/GITHUB_BUILD.md)**
 
 ## Tính năng MVP
 

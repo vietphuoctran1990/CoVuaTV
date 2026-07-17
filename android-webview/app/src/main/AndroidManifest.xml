@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+      Android TV / Xiaomi Google TV compatibility:
+      - leanback + touchscreen NOT required → sideload OK on TV không cảm ứng
+      - không khai báo camera/telephony/GPS (tránh filter "không tương thích")
+      - supports-screens đầy đủ (TV 4K = xlarge)
+    -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.faketouch" android:required="false" />
+    <uses-feature android:name="android.hardware.gamepad" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+    <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
+
+    <!-- Mọi kích thước màn — TV 55" 4K thường là xlarge / long -->
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:anyDensity="true"
+        android:resizeable="true" />
 
     <application
         android:allowBackup="true"
@@ -12,13 +32,18 @@
         android:theme="@style/Theme.DoraemonChess"
         android:usesCleartextTraffic="false"
         android:banner="@drawable/tv_banner"
-        android:hardwareAccelerated="true">
+        android:isGame="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:extractNativeLibs="true">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation"
-            android:screenOrientation="sensorLandscape"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|fontScale"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.DoraemonChess">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

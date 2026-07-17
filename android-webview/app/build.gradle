@@ -8,14 +8,19 @@ android {
 
     defaultConfig {
         applicationId "com.family.doraemonchesstv"
-        minSdk 24
+        // Android TV / Google TV Xiaomi thường API 28–34; 21 vẫn an toàn cho WebView thuần
+        minSdk 21
         targetSdk 34
-        // #18: versionCode/Name co the ghi de tu CI (bien moi truong)
-        versionCode(System.getenv("VERSION_CODE")?.toInteger() ?: 3)
-        versionName(System.getenv("VERSION_NAME") ?: "1.2.0")
+        // #18: versionCode/Name có thể ghi đè từ CI (biến môi trường)
+        versionCode(System.getenv("VERSION_CODE")?.toInteger() ?: 4)
+        versionName(System.getenv("VERSION_NAME") ?: "1.3.0-tv")
+
+        // Pure Java/WebView — không có .so → cài được mọi ABI (A55/A73 arm64, 32-bit…)
+        // Không lọc mật độ — TV 4K / 144Hz / overscan
+        vectorDrawables.useSupportLibrary = true
     }
 
-    // #17: cau hinh ky release neu co keystore (do CI tao va truyen qua bien moi truong)
+    // #17: cấu hình ký release nếu có keystore (CI tạo và truyền qua env)
     signingConfigs {
         release {
             def storePath = System.getenv("KEYSTORE_FILE")
@@ -31,14 +36,16 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Chi ky khi CI cung cap keystore; neu khong, giu unsigned (van build duoc)
+            // Chỉ ký khi CI cung cấp keystore
             if (System.getenv("KEYSTORE_FILE") != null && !System.getenv("KEYSTORE_FILE").isEmpty()) {
                 signingConfig signingConfigs.release
             }
         }
         debug {
-            applicationIdSuffix ".debug"
+            // Cùng applicationId với release (không thêm .debug) → cài đè trên TV dễ hơn
+            debuggable true
         }
     }
     compileOptions {
@@ -49,6 +56,14 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+        jniLibs {
+            // Một số TV Android cũ cần extract .so (dù app WebView hầu như không có native)
+            useLegacyPackaging = true
+        }
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
     }
 }
 

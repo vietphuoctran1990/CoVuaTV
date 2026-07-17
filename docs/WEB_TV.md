@@ -25,24 +25,40 @@ File:
 
 **Lưu ý:** Service Worker / “Cài app” cần **http://localhost** hoặc **https**, không chạy tốt với `file://`.
 
-## 3. APK Android TV (Xiaomi)
+## 3. APK Android TV (Xiaomi S Mini LED / Google TV)
 
 Project: `android-webview/` — WebView load `assets/www` (bản copy của `web/`).
+
+> **Khuyến nghị:** chỉ dùng APK WebView trên TV. Bản export Godot dễ bị
+> Xiaomi/Google TV báo **không tương thích** (thiếu Leanback, GLES/Vulkan, ABI).
 
 ### Build bằng GitHub Actions (không cần SDK máy cty)
 
 1. Push repo lên GitHub (máy nhà nếu cty chặn)
 2. **Actions** → **Build Android APK (WebView)** → **Run workflow**
-3. Tải artifact **`doraemon-chess-tv-apk`**
-4. Cài TV: Unknown sources → USB / `adb install -r app-debug.apk`
+3. Tải artifact **`doraemon-chess-tv-apk`** → `DoraemonChessTV.apk`
+4. Cài TV: Unknown sources → USB / ADB
+
+```bash
+adb connect <IP_TV>:5555
+# Gỡ bản cũ nếu khóa ký / package lệch
+adb uninstall com.family.doraemonchesstv || true
+adb install -r DoraemonChessTV.apk
+```
 
 Package id: `com.family.doraemonchesstv`  
-Có `LEANBACK_LAUNCHER` cho Android TV.
+Manifest: `LEANBACK_LAUNCHER`, touchscreen optional, `supports-screens` xlarge (4K).
 
 ### Cập nhật web trong APK
 
 CI **tự copy** `web/` → `android-webview/app/src/main/assets/www/` mỗi lần build.  
 Chỉ cần sửa trong `web/`, không sửa tay assets.
+
+### TV 4K 144Hz (Xiaomi S Mini LED 55")
+
+- Orientation cố định **landscape** (không `sensorLandscape`)
+- UI scale theo `vmin` / CSS — overscan padding đã nới
+- WebView hardware layer + `textZoom=100` tránh vỡ layout mật độ cao
 
 ## 4. Điều khiển TV
 
