@@ -65,11 +65,11 @@
   let autoFlip = readBool(FLIP_KEY, false);
 
   const TUT = [
-    "Chào mừng! Dùng <b>mũi tên</b> di chuyển, <b>Enter/OK</b> chọn. Cũng có thể <b>chạm/click</b> ô cờ.",
-    "Hai phe: <b>Xanh</b> (đi trước) và <b>Cam</b>. Bảo vệ <b>Doraemon (Vua)</b> của mình!",
+    "Chào mừng! Remote: <b>mũi tên</b> di chuyển, <b>OK/Enter</b> chọn. Trên TV nhìn từ sofa vẫn rõ nhân vật!",
+    "Hai phe: <b>Xanh</b> (đi trước) và <b>Cam</b> (đế màu khác). Bảo vệ <b>Doraemon (Vua)</b>!",
     "<b>Doraemon</b>=Vua · <b>Xuka</b>=Hậu · <b>Chaien</b>=Xe · <b>Xeko</b>=Tượng · <b>Nobita</b>=Mã · <b>Mini-Dora</b>=Tốt.",
-    "Chọn quân → chọn ô xanh (đi) hoặc cam (ăn). Nhấn <b>Back/Esc</b> để mở menu: gợi ý, hoàn tác.",
-    "Ăn quân có hiệu ứng sao! Chiếu Doraemon sẽ nhấp nháy. Thắng khi chiếu hết. Chúc vui!",
+    "Chọn quân → ô xanh (đi) hoặc viền đỏ (ăn). <b>Back</b> = tạm dừng · gợi ý · hoàn tác.",
+    "Ăn quân nổ sao · Chiếu rung bàn · Phong cấp có vòng sáng · Thắng có confetti. Chúc bé vui!",
   ];
 
   const CHARS = [6, 5, 4, 3, 2, 1].map((t) => ({
@@ -217,30 +217,67 @@
 
   /* ---------- hieu ung ---------- */
 
-  function sparkAt(clientX, clientY, color) {
+  function sparkAt(clientX, clientY, color, n) {
     const layer = $("fx-layer");
-    for (let i = 0; i < 18; i++) {
+    const count = n || 22;
+    for (let i = 0; i < count; i++) {
       const s = document.createElement("span");
       s.className = "spark";
-      const ang = Math.random() * Math.PI * 2;
-      const dist = 40 + Math.random() * 90;
+      const ang = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+      const dist = 36 + Math.random() * 110;
       s.style.left = clientX + "px";
       s.style.top = clientY + "px";
-      s.style.background = color || (Math.random() > 0.5 ? "#ffd54f" : "#4fc3f7");
+      const c = color || (Math.random() > 0.5 ? "#ffd54f" : "#4fc3f7");
+      s.style.background = c;
+      s.style.color = c;
       s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
       s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
       layer.appendChild(s);
-      setTimeout(() => s.remove(), 700);
+      setTimeout(() => s.remove(), 800);
     }
   }
 
-  function banner(text) {
+  function starsAt(clientX, clientY, count) {
+    const layer = $("fx-layer");
+    const glyphs = ["✦", "★", "✧", "❇"];
+    for (let i = 0; i < (count || 10); i++) {
+      const s = document.createElement("span");
+      s.className = "fx-star";
+      s.textContent = glyphs[i % glyphs.length];
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 100;
+      s.style.left = clientX + "px";
+      s.style.top = clientY + "px";
+      s.style.color = ["#ffd54f", "#fff", "#4fc3f7", "#ff8a65"][i % 4];
+      s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+      s.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+      layer.appendChild(s);
+      setTimeout(() => s.remove(), 950);
+    }
+  }
+
+  function trailAlong(fromRect, toRect) {
+    const layer = $("fx-layer");
+    const steps = 6;
+    for (let i = 0; i < steps; i++) {
+      const t = (i + 1) / (steps + 1);
+      const s = document.createElement("span");
+      s.className = "fx-trail";
+      s.style.left = fromRect.left + fromRect.width / 2 + (toRect.left - fromRect.left) * t + "px";
+      s.style.top = fromRect.top + fromRect.height / 2 + (toRect.top - fromRect.top) * t + "px";
+      s.style.animationDelay = i * 0.03 + "s";
+      layer.appendChild(s);
+      setTimeout(() => s.remove(), 500);
+    }
+  }
+
+  function banner(text, kind) {
     const layer = $("fx-layer");
     const b = document.createElement("div");
-    b.className = "banner-fx";
+    b.className = "banner-fx" + (kind ? " " + kind : "");
     b.textContent = text;
     layer.appendChild(b);
-    setTimeout(() => b.remove(), 900);
+    setTimeout(() => b.remove(), 1150);
   }
 
   function confettiBurst(count) {
@@ -257,7 +294,16 @@
     }
   }
 
-  // Hieu ung quan bi an: ban sao thu nho + mo dan tai cho
+  function shakeBoard() {
+    const b = $("board");
+    if (!b) return;
+    b.classList.remove("shake");
+    void b.offsetWidth;
+    b.classList.add("shake");
+    setTimeout(() => b.classList.remove("shake"), 500);
+  }
+
+  // Hieu ung quan bi an: bay len + xoay + spark + stars
   function captureFx(sqIdx, victim) {
     const rect = cells[sqIdx].getBoundingClientRect();
     const img = document.createElement("img");
@@ -268,29 +314,55 @@
     img.style.width = rect.width * 0.88 + "px";
     img.style.height = rect.height * 0.88 + "px";
     $("fx-layer").appendChild(img);
-    setTimeout(() => img.remove(), 500);
-    sparkAt(rect.left + rect.width / 2, rect.top + rect.height / 2, "#ffd54f");
+    setTimeout(() => img.remove(), 560);
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    sparkAt(cx, cy, "#ffd54f", 28);
+    starsAt(cx, cy, 12);
+    shakeBoard();
   }
 
-  // Hieu ung phong cap hoanh trang: vong sang + nhieu sao
+  // Hieu ung phong cap: vong sang + sao + spark mau
   function promoteFx(sqIdx) {
     const rect = cells[sqIdx].getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    const ring = document.createElement("div");
-    ring.className = "fx-ring";
-    ring.style.left = cx + "px";
-    ring.style.top = cy + "px";
-    ring.style.width = rect.width + "px";
-    ring.style.height = rect.height + "px";
-    $("fx-layer").appendChild(ring);
-    setTimeout(() => ring.remove(), 700);
-    sparkAt(cx, cy, "#ffd54f");
-    setTimeout(() => sparkAt(cx, cy, "#4fc3f7"), 120);
-    setTimeout(() => sparkAt(cx, cy, "#ff8a65"), 240);
+    for (let i = 0; i < 3; i++) {
+      const ring = document.createElement("div");
+      ring.className = "fx-ring";
+      ring.style.left = cx + "px";
+      ring.style.top = cy + "px";
+      ring.style.width = rect.width * (0.9 + i * 0.15) + "px";
+      ring.style.height = rect.height * (0.9 + i * 0.15) + "px";
+      ring.style.animationDelay = i * 0.08 + "s";
+      ring.style.borderColor = ["#ffd54f", "#4fc3f7", "#ff8a65"][i];
+      $("fx-layer").appendChild(ring);
+      setTimeout(() => ring.remove(), 900);
+    }
+    sparkAt(cx, cy, "#ffd54f", 26);
+    setTimeout(() => sparkAt(cx, cy, "#4fc3f7", 18), 100);
+    setTimeout(() => starsAt(cx, cy, 14), 80);
   }
 
-  // FLIP: truot quan tu o cu sang o moi (sau khi da sync DOM)
+  function checkFx(sqIdx) {
+    if (sqIdx < 0 || !cells[sqIdx]) return;
+    const rect = cells[sqIdx].getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const shock = document.createElement("div");
+    shock.className = "fx-shock";
+    shock.style.left = cx + "px";
+    shock.style.top = cy + "px";
+    shock.style.width = rect.width + "px";
+    shock.style.height = rect.height + "px";
+    $("fx-layer").appendChild(shock);
+    setTimeout(() => shock.remove(), 600);
+    sparkAt(cx, cy, "#ff5252", 30);
+    starsAt(cx, cy, 8);
+    shakeBoard();
+  }
+
+  // FLIP: truot quan tu o cu sang o moi + duoi sao
   function animatePiece(from, to) {
     const img = cells[to] && cells[to].querySelector(".piece-img");
     if (!img) return;
@@ -299,15 +371,18 @@
     const dx = a.left - b.left;
     const dy = a.top - b.top;
     if (!dx && !dy) return;
+    trailAlong(a, b);
+    img.classList.add("moving");
     img.style.transition = "none";
-    img.style.transform = `translate(${dx}px, ${dy}px)`;
-    img.getBoundingClientRect(); // ep reflow
-    img.style.transition = "transform .18s ease-out";
+    img.style.transform = `translate(${dx}px, ${dy}px) scale(1.08)`;
+    img.getBoundingClientRect();
+    img.style.transition = "transform .28s cubic-bezier(.2,.8,.2,1)";
     img.style.transform = "";
     img.addEventListener(
       "transitionend",
       () => {
         img.style.transition = "";
+        img.classList.remove("moving");
       },
       { once: true }
     );
@@ -632,7 +707,7 @@
     $("legend").innerHTML = [6, 5, 4, 3, 2, 1]
       .map(
         (t) =>
-          `<li><img src="pieces/blue/${fileOf(t)}" alt=""/><span><b>${C.NAMES_VI[t]}</b> — ${C.ROLE_VI[t]}</span></li>`
+          `<li><img src="pieces/blue/${fileOf(t)}" alt="${C.NAMES_VI[t]}"/><span><b>${C.NAMES_VI[t]}</b></span><span class="role">${C.ROLE_VI[t]}</span></li>`
       )
       .join("");
   }
@@ -718,8 +793,12 @@
     const blue = st.turn === C.W;
     let label = "Lượt: " + sideName(st.turn);
     if (vsAI) label += st.turn === humanSide ? " (bé)" : " (máy)";
-    turn.textContent = label;
     turn.className = "badge-turn " + (blue ? "blue" : "orange");
+    const face = $("turn-face");
+    const text = $("turn-text");
+    if (face) face.src = `pieces/${blue ? "blue" : "orange"}/king_doraemon.png`;
+    if (text) text.textContent = label;
+    else turn.textContent = label;
     $("cap-w").innerHTML = captured.w.map((t) => `<img src="pieces/orange/${fileOf(t)}" alt=""/>`).join("");
     $("cap-b").innerHTML = captured.b.map((t) => `<img src="pieces/blue/${fileOf(t)}" alt=""/>`).join("");
   }
@@ -846,7 +925,7 @@
       const arr = C.side(mover) === C.W ? captured.w : captured.b;
       arr.push(C.typ(victim));
       captureFx(m.ep ? epSq : m.to, victim);
-      banner("Ăn quân!");
+      banner("Ăn quân!", "ok");
       toast(`${C.NAMES_VI[C.typ(mover)]} ăn ${C.NAMES_VI[C.typ(victim)]}!`);
       S.play("capture");
       S.speak(`${C.NAMES_VI[C.typ(mover)]} ăn ${C.NAMES_VI[C.typ(victim)]}`);
@@ -874,7 +953,7 @@
       void d.offsetWidth;
       d.classList.add("pop");
       promoteFx(m.to);
-      banner(C.NAMES_VI[m.promo] + " phong cấp!");
+      banner("✨ " + C.NAMES_VI[m.promo] + " phong cấp!", "promo");
       S.speak(C.NAMES_VI[m.promo] + " phong cấp!");
     }
 
@@ -893,15 +972,12 @@
       return;
     }
     if (C.inCheck(st, st.turn)) {
-      banner("Chiếu!");
-      toast("Chiếu Doraemon rồi!");
+      banner("⚔ Chiếu tướng!", "");
+      toast("Chiếu Doraemon rồi — cẩn thận!");
       S.play("check");
       S.speak("Chiếu tướng!");
       const k = C.findKing(st, st.turn);
-      if (k >= 0 && cells[k]) {
-        const rect = cells[k].getBoundingClientRect();
-        sparkAt(rect.left + rect.width / 2, rect.top + rect.height / 2, "#ff5252");
-      }
+      checkFx(k);
     }
 
     // Tu xoay ban khi choi 2 nguoi
@@ -1047,8 +1123,12 @@
     S.play(mate ? "win" : "promote");
     if (mate) S.speak(vsAI && winner === humanSide ? "Bé thắng rồi! Hoan hô!" : "Chiến thắng!");
     else S.speak("Hòa cờ");
-    confettiBurst(mate ? 90 : 30);
-    banner(mate ? "Thắng!" : "Hòa!");
+    confettiBurst(mate ? 120 : 40);
+    banner(mate ? "🏆 Chiến thắng!" : "Hòa cờ", mate ? "gold" : "ok");
+    if (mate) {
+      starsAt(window.innerWidth / 2, window.innerHeight * 0.35, 24);
+      sparkAt(window.innerWidth / 2, window.innerHeight * 0.4, "#ffd54f", 40);
+    }
   }
 
   function syncEndButtons() {

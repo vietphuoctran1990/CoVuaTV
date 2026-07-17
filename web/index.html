@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="description" content="Cờ vua gia đình — Doraemon, Xuka, Chaien, Xeko, Nobita. Chơi trên TV / máy tính / điện thoại." />
+  <meta name="description" content="Cờ vua Doraemon cho Android TV — nhân vật dễ nhận, UI lớn, remote OK." />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
@@ -19,11 +19,20 @@
     <!-- MENU -->
     <section id="screen-menu" class="screen">
       <div class="hero">
-        <img class="hero-img" src="pieces/blue/king_doraemon.png" alt="" />
+        <img class="hero-img" src="pieces/blue/king_doraemon.png" alt="Doraemon" />
         <div>
           <h1>Cờ Vua Doraemon TV</h1>
-          <p class="tagline">Bố mẹ &amp; bé chơi cùng nhau · UI lớn · Remote / bàn phím / chạm</p>
+          <p class="tagline">Bé nhận mặt Doraemon · Xuka · Chaien · Xeko · Nobita · Mini-Dora</p>
+          <span class="version-pill">Bản TV 2.0 · Remote · 4K</span>
         </div>
+      </div>
+      <div class="cast-row" aria-hidden="true">
+        <img src="pieces/blue/king_doraemon.png" alt="" title="Doraemon" />
+        <img src="pieces/blue/queen_xuka.png" alt="" title="Xuka" />
+        <img src="pieces/blue/rook_chaien.png" alt="" title="Chaien" />
+        <img src="pieces/blue/bishop_xeko.png" alt="" title="Xeko" />
+        <img src="pieces/blue/knight_nobita.png" alt="" title="Nobita" />
+        <img src="pieces/blue/pawn_minidora.png" alt="" title="Mini-Dora" />
       </div>
       <p id="menu-stats" class="menu-stats"></p>
       <div id="menu-list" class="menu-list" role="menu"></div>
@@ -31,7 +40,7 @@
         <div class="modal-card">
           <h3>Chơi với máy</h3>
           <p id="diff-side" class="diff-side">◀ Bé cầm: <b>Phe Xanh</b> ▶</p>
-          <p class="hint-sm">↑ ↓ chọn độ khó · ← → đổi phe · Enter/OK bắt đầu</p>
+          <p class="hint-sm">↑ ↓ độ khó · ← → đổi phe · Enter/OK bắt đầu</p>
           <div id="diff-list" class="pause-list"></div>
         </div>
       </div>
@@ -51,27 +60,32 @@
     <!-- GAME -->
     <section id="screen-game" class="screen" hidden>
       <header class="game-top">
-        <div id="turn-badge" class="badge-turn">Lượt: Phe Xanh</div>
+        <div id="turn-badge" class="badge-turn blue">
+          <img id="turn-face" src="pieces/blue/king_doraemon.png" alt="" />
+          <span id="turn-text">Lượt: Phe Xanh</span>
+        </div>
         <div id="mode-badge" class="badge-mode">2 người</div>
         <button type="button" id="btn-hint" class="chip">Gợi ý</button>
         <button type="button" id="btn-undo" class="chip">Hoàn tác</button>
         <button type="button" id="btn-menu" class="chip">Tạm dừng</button>
       </header>
       <div class="game-body">
-        <div id="board" class="board" aria-label="Bàn cờ">
-          <svg id="arrow-layer" class="arrow-layer" aria-hidden="true"></svg>
+        <div class="board-wrap">
+          <div id="board" class="board" aria-label="Bàn cờ">
+            <svg id="arrow-layer" class="arrow-layer" aria-hidden="true"></svg>
+          </div>
         </div>
         <aside class="side-panel">
-          <h2>Nhân vật</h2>
+          <h2>⭐ Nhân vật</h2>
           <ul class="legend" id="legend"></ul>
           <div class="captured">
-            <div><span>Xanh ăn:</span> <span id="cap-w"></span></div>
-            <div><span>Cam ăn:</span> <span id="cap-b"></span></div>
+            <div class="captured-row"><strong>Xanh ăn</strong><span id="cap-w"></span></div>
+            <div class="captured-row"><strong>Cam ăn</strong><span id="cap-b"></span></div>
           </div>
           <p class="side-help">
-            <strong>Cách đi:</strong> chọn quân → chọn ô.<br/>
-            Ô <span class="dot-g"></span> đi được · Ô <span class="dot-r"></span> ăn được.<br/>
-            <strong>Back/Esc:</strong> tạm dừng · gợi ý · hoàn tác.
+            <strong>Remote:</strong> mũi tên + OK chọn quân / ô.<br/>
+            Ô <span class="dot-g"></span> đi · Ô <span class="dot-r"></span> ăn được.<br/>
+            <strong>Back:</strong> tạm dừng · gợi ý · hoàn tác.
           </p>
         </aside>
       </div>
@@ -79,7 +93,7 @@
       <div id="fx-layer" class="fx-layer" aria-hidden="true"></div>
       <div id="promo" class="modal" hidden>
         <div class="modal-card">
-          <h3>Mini-Dora phong cấp!</h3>
+          <h3>✨ Mini-Dora phong cấp!</h3>
           <p>Chọn nhân vật (← → rồi Enter)</p>
           <div id="promo-choices" class="promo-row"></div>
         </div>
@@ -105,15 +119,15 @@
 
     <!-- TUTORIAL -->
     <section id="screen-tut" class="screen" hidden>
-      <h1>Học chơi (5 bước)</h1>
-      <div id="tut-card" class="card big"></div>
+      <h1 style="color:#fff59d;text-align:center">Học chơi (5 bước)</h1>
+      <div id="tut-card" class="card big" style="margin:12px auto"></div>
       <p class="hint-bar"><kbd>←</kbd><kbd>→</kbd> · <kbd>Enter</kbd> · <kbd>Esc</kbd> menu</p>
     </section>
 
     <!-- CHARS -->
     <section id="screen-chars" class="screen" hidden>
-      <h1>Giới thiệu nhân vật</h1>
-      <div id="char-card" class="card big char-card"></div>
+      <h1 style="color:#fff59d;text-align:center">Giới thiệu nhân vật</h1>
+      <div id="char-card" class="card big char-card" style="margin:12px auto"></div>
       <p class="hint-bar"><kbd>←</kbd><kbd>→</kbd> · <kbd>Enter</kbd>/<kbd>Esc</kbd> về menu</p>
     </section>
   </div>

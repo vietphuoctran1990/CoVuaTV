@@ -1,5 +1,5 @@
 /* Service worker — offline cache for PWA */
-const CACHE = "doraemon-chess-v2";
+const CACHE = "doraemon-chess-v3-tv";
 const ASSETS = [
   "./",
   "./index.html",
