@@ -21,6 +21,13 @@ hoặc mở **`web/index.html`**
 Cũng hỗ trợ **click/chạm**. PWA + fullscreen: `Choi-Game.bat` → **2**.  
 Chi tiết: **[docs/WEB_TV.md](docs/WEB_TV.md)**
 
+
+## Ảnh nhân vật “đúng kinh điển”
+
+Repo **không** kèm hình official Doraemon (bản quyền).  
+Muốn dùng ảnh bạn có quyền: xem **[docs/CUSTOM_CHARACTERS.md](docs/CUSTOM_CHARACTERS.md)**  
+→ bỏ PNG vào `web/pieces/_import/` → `python3 tools/import_character_pack.py` → build APK WebView.
+
 ## Map quân cờ
 
 | Quân | Nhân vật | Phe |

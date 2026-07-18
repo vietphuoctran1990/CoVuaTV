@@ -32,3 +32,10 @@ Cùng pose, khác màu outfit.
 ## Pipeline
 
 Placeholder (hiện tại, vẽ bằng code) → sketch → final PNG → gán texture trong `board_view` (thay `_draw_piece`).
+
+
+## Bản quyền & ảnh “nguyên mẫu”
+
+- **Không** nhúng ảnh official Doraemon / scan truyện / frame phim trong repo.
+- Muốn bé nhận đúng hình kinh điển: dùng pack **bạn tự có quyền**, xem **[CUSTOM_CHARACTERS.md](CUSTOM_CHARACTERS.md)**.
+- Art trong `web/pieces/` hiện tại là **chibi gốc cách điệu** (gia đình), không phải asset Fujiko Pro.
